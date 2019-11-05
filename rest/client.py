@@ -25,7 +25,8 @@ class FtxClient:
 
     def _request(self, method: str, path: str, **kwargs) -> Any:
         request = Request(method, self._ENDPOINT + path, **kwargs)
-        self._sign_request(request)
+        if self._api_key and self._api_secret:
+            self._sign_request(request)
         response = self._session.send(request.prepare())
         return self._process_response(response)
 
@@ -134,3 +135,9 @@ class FtxClient:
 
     def get_position(self, name: str, show_avg_price: bool = False) -> dict:
         return next(filter(lambda x: x['future'] == name, self.get_positions(show_avg_price)), None)
+    
+    def get_battle_royale_leaderboard(self) -> List[dict]:
+        return self._get('battle_royale/leaderboard')
+
+    def get_battle_royale_trader(self, trader_id: str) -> dict:
+        return self._get(f'battle_royale/trader/{trader_id}')
