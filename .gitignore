@@ -1,2 +1,7 @@
 *__pycache__*
 .idea*
+.vscode
+target
+.settings
+.project
+.classpath
