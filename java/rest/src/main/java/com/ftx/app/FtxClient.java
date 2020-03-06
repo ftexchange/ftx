@@ -17,13 +17,16 @@ import org.json.JSONObject;
 
 public class FtxClient {
   String host = "https://ftx.com";
-  String apiKey = "";
-  String apiSecretKey = "";
-  String subaccount = "test";
-
   HttpClient client = HttpClient.newHttpClient();
-  HttpRequest.Builder builder = HttpRequest.newBuilder().header("FTX-KEY", this.apiKey).header("FTX-SUBACCOUNT",
-      this.subaccount);
+  String apiKey;
+  String apiSecretKey;
+  String subaccount;
+
+  FtxClient (String apiKey, String apiSecretKey, String subaccount) {
+    this.apiKey = apiKey;
+    this.apiSecretKey = apiSecretKey;
+    this.subaccount = subaccount;
+  }
 
   private HttpRequest makeRequest(String endpoint, String method, String body) {
     Long now = new Date().getTime();
@@ -260,7 +263,7 @@ public class FtxClient {
   }
 
   public static void main(String args[]) throws IOException, InterruptedException {
-    // FtxClient client = new FtxClient();
+    FtxClient client = new FtxClient("apiKey", "apiSecKey", "test");
     // String market = "BTC-0327";
     // Long now = new Date().getTime() / 1000;
     // Double price = 0.01;
@@ -268,7 +271,7 @@ public class FtxClient {
     // String side = "buy";
     // String orderType = "limit";
     // String type = "stop";
-    // HttpResponse<String> response = client.listFutures();
+    HttpResponse<String> response = client.listFutures();
     // HttpResponse<String> response = client.getOrderBook(market, 20);
     // HttpResponse<String> response = client.getTrades(market);
     // HttpResponse<String> response = client.getAccountInfo();
@@ -280,7 +283,7 @@ public class FtxClient {
     // HttpResponse<String> response = client.getFills();
     // HttpResponse<String> response = client.getBalances();
 
-    // System.out.println("aaassddd: " + response.statusCode());
-    // System.out.println(response.body());
+    System.out.println("statusCode: " + response.statusCode());
+    System.out.println(response.body());
   }
 }
