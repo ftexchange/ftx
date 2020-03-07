@@ -1,0 +1,19 @@
+{
+  "name": "ftx-demo-rest",
+  "version": "1.0.0",
+  "description": "Ftx Demo JavaScript version",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "ftx",
+    "js"
+  ],
+  "author": "lithium2013",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "crypto-js": "^4.0.0"
+  }
+}
