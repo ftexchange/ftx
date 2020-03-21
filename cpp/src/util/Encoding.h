@@ -8,9 +8,9 @@ namespace util::encoding {
 namespace {
 struct HmacCtx
 {
-    HMAC_CTX ctx;
-    HmacCtx() { HMAC_CTX_init(&ctx); }
-    ~HmacCtx() { HMAC_CTX_cleanup(&ctx); }
+    HMAC_CTX *ctx;
+    HmacCtx() { ctx = HMAC_CTX_new(); }
+    ~HmacCtx() { HMAC_CTX_free(ctx); }
 };
 }
 
@@ -22,9 +22,9 @@ std::string hmac(const std::string& secret,
     char signed_msg[64];
 
     HMAC_Init_ex(
-      &hmac.ctx, secret.data(), (int)secret.size(), EVP_sha256(), nullptr);
-    HMAC_Update(&hmac.ctx, (unsigned char*)msg.data(), msg.size());
-    HMAC_Final(&hmac.ctx, (unsigned char*)signed_msg, nullptr);
+      hmac.ctx, secret.data(), (int)secret.size(), EVP_sha256(), nullptr);
+    HMAC_Update(hmac.ctx, (unsigned char*)msg.data(), msg.size());
+    HMAC_Final(hmac.ctx, (unsigned char*)signed_msg, nullptr);
 
     return {signed_msg, signed_len};
 }
@@ -48,7 +48,7 @@ constexpr char hexmap[] = {'0',
                            'f'};
 }
 
-std::string string_to_hex(unsigned char* data, std::size_t len)
+std::string util_string_to_hex(unsigned char* data, std::size_t len)
 {
     std::string s(len * 2, ' ');
     for (std::size_t i = 0; i < len; ++i) {

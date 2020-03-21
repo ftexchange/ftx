@@ -14,6 +14,9 @@ find_package(Boost 1.71 REQUIRED)
 link_directories(${Boost_LIBRARY_DIRS})
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
+find_package(OpenSSL 1.1 REQUIRED)
+include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+
 include_directories(src)
 include_directories(SYSTEM src/external)
 
