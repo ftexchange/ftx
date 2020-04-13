@@ -85,7 +85,7 @@ class FtxClient:
     ) -> dict:
         assert (existing_order_id is None) ^ (existing_client_order_id is None), \
             'Must supply exactly one ID for the order to modify'
-        assert (price is None) or (size is None), 'Must modify price or size of order'
+        assert (price is not None) or (size is not None), 'Must modify price or size of order'
         path = f'orders/{existing_order_id}/modify' if existing_order_id is not None else \
             f'orders/by_client_id/{existing_client_order_id}/modify'
         return self._post(path, {
