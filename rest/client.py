@@ -293,5 +293,5 @@ class FtxClient:
     def get_options_fills(self, limit:float=None, start_time:float=None, end_time:float=None)->List[dict]:
         return self._get(f'options/fills', {'limit':limit, 'start_time':start_time, 'end_time':end_time})
 
-    def get_expired_futures(self):
+    def get_expired_futures(self)->dict:
         return self._get(f'expired_futures')
