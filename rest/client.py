@@ -85,7 +85,7 @@ class FtxClient:
     ) -> dict:
         assert (existing_order_id is None) ^ (existing_client_order_id is None), \
             'Must supply exactly one ID for the order to modify'
-        assert (price is None) or (size is None), 'Must modify price or size of order'
+        assert (price is not None) or (size is not None), 'Must modify price or size of order'
         path = f'orders/{existing_order_id}/modify' if existing_order_id is not None else \
             f'orders/by_client_id/{existing_client_order_id}/modify'
         return self._post(path, {
@@ -157,3 +157,141 @@ class FtxClient:
 
     def get_position(self, name: str, show_avg_price: bool = False) -> dict:
         return next(filter(lambda x: x['future'] == name, self.get_positions(show_avg_price)), None)
+   
+    def get_subaccounts(self)->dict:
+        return self._get(f'subaccounts/')
+
+    def create_subaccount(self, nickname:str)-> dict:
+        return self._post(f'subaccounts/', {'nickname':nickname})
+
+    def change_subaccount(self, nickname:str, newNickname:str)->dict:
+        return self._post(f'subaccounts/update_name', {'nickname':nickname, 'newNickname':newNickname})
+
+    def delete_subaccount(self, nickname:str)->dict:
+        return self._delete(f'subaccounts/', {'nickname':nickname})
+
+    def get_subaccount_balances(self, nickname:str)->dict:
+        return self._get(f'subaccounts/{nickname}/balances')
+
+    def transfer_subaccounts(self, coin:str, size:float, source:str, destination:str)->dict:
+        """
+        use None or 'main' for the main account
+        """
+        self._post(f'subaccounts/transfer', {'coin':coin, 'size':size, 'source':source, 'destination':destination})
+
+    def get_historical_prices(self, market_name: str, resolution:float, limit:float = None, start_time:float=None, end_time:float=None)-> List[dict]:
+        return self._get(f'markets/{market_name}/candles?resolution={resolution}&limit={limit}&start_time={start_time}&end_time={end_time}')
+
+    def get_future(self, future_name:str)->dict:
+        return self._get(f'futures/{future_name}')
+
+    def get_future_stats(self, future_name:str)->dict:
+        return self._get(f'futures/{future_name}/stats')
+
+    def get_funding_rate(self, future:str=None, end_time:float=None, start_time:float=None)->dict:
+        return self._get(f'funding_rates', {'future':future, 'end_time':end_time, 'start_time':start_time})
+
+    def get_market(self, market_name: str) -> dict:
+        return next(filter(lambda x: x['name'] == market_name, self.list_markets()), None)
+
+    def change_leverage(self, leverage: float)->dict:
+        return self._post(f'account/leverage', {'leverage':leverage})
+
+    def get_coins(self)-> dict:
+        return self._get(f'wallet/coins')
+
+    def get_balances_all_accounts(self)->dict:
+        return self._get(f'wallet/all_balances')
+
+    def get_deposit_history(self)-> dict:
+        return self._get(f'wallet/deposits')
+
+    def get_withdrawal_history(self)->dict:
+        return self._get(f'wallet/withdrawals')
+
+    def request_withdrawal(self,coin:str, size:float, address:str, tag:str=None, password:str=None, code:str=None)->dict:
+        return self._post(f'wallet/withdrawals', {'coin':coin, 'size':size, 'address':address, 'tag':tag, 'password':password, 'code':code})
+
+    def get_trigger_order_triggers(self, order_id:str)->dict:
+        return self._get(f'conditional_orders/{order_id}/triggers')
+
+    def modify_conditional_order(self, order_id:float, size:float, triggerPrice:float=None, trailValue:float=None)->dict:
+        return self._post(f'conditional_orders/{order_id}/modify', {'size':size, 'triggerPrice':triggerPrice, 'traiValue':trailValue})
+
+    def get_order_status(self, order_id:str)->dict:
+        return self._get(f'orders/{order_id}')
+
+    def get_order_status_by_client_id(self, client_order_id:str)-> dict:
+        return self._get(f'orders/by_client_id/{client_order_id}')
+
+    def cancel_order_by_client_id(self, client_order_ide:str)->dict:
+        return self._delete(f'orders/by_client_id/{client_order_id}')
+
+    def cancel_open_trigger_order(self, id:str)->dict:
+        return self._delete(f'conditional_orders/{id}')
+
+    def get_funding_payments(self, future:str=None, start_time:float=None, end_time:float=None)->dict:
+        return self._get(f'funding_payments', {'future':future, 'end_time':end_time, 'start_time':start_time})
+
+    def list_leveraged_tokens(self)->List[dict]:
+        return self._get(f'lt/tokens')
+
+    def get_token_info(self, token_name:str)->dict:
+        return self._get(f'lt/{token_name}')
+
+    def get_leveraged_token_balance(self)->List[dict]:
+        return self._get(f'lt/balances')
+
+    def list_leveraged_token_creation_requests(self)-> List[dict]:
+        return self._get(f'lt/creations')
+
+    def request_leveraged_tokens_creation(self, token_name:str, size:float)->dict:
+        return self._post(f'lt/{token_name}/create', {'size':size})
+
+    def list_leveraged_token_redemption_requests(self)->List[dict]:
+        return self._get(f'lt/redemptions')
+
+    def request_leveraged_token_redemption(self, token_name:str, size:float)->dict:
+        return self._post(f'lt/{token_name}/redeem', {'size':size})
+
+    def list_quote_requests(self)->List[dict]:
+        return self._get(f'options/requests')
+
+    def get_my_quote_requests(self)->List[dict]:
+        return self._get(f'options/my_requests')
+
+    def create_quote_request(self, type:str, strike:float, expiry:float, side:str, size:float, limitPrice:Optional[float]=None, hideLimitPrice:bool=False, requestExpiry:Optional[float]=None)->dict:
+        return self._post(f'options/requests', {'underlying':'BTC', 'type':type, 'strike':strike, 'expiry':expiry, 'side':side, 'size':size, **({'limitPrice': limitPrice} if limitPrice is not None else {}), 'hideLimitPrice':hideLimitPrice, **({'requestExpiry': requestExpiry} if requestExpiry is not None else {})})
+
+    def cancel_quote_request(self, request_id:str)->dict:
+        return self._delete(f'options/requests/{request_id}')
+
+    def get_quote_for_my_quote_request(self, request_id:str)->dict:
+        return self._get(f'options/requests/{request_id}/quotes')
+
+    def create_quote(self, request_id:str, price:float)-> dict:
+        return self._post(f'options/requests/{request_id}/quotes', {'price':price})
+
+    def get_my_quotes(self):
+        return self._get(f'options/my_quotes')
+
+    def cancel_quote(self, quote_id:str)->dict:
+        return self._delete(f'options/quotes/{quote_id}')
+
+    def accept_quote(self, quote_id:str)->dict:
+        return self._post(f'options/quotes/{quote_id}/accept')
+
+    def get_account_option_info(self)->dict:
+        return self._get(f'options/account_info')
+
+    def get_positions_options(self)->List[dict]:
+        return self._get(f'options/positions')
+
+    def get_public_options_trade(self, limit:float=None, start_time:float=None, end_time:float=None)->List[dict]:
+        return self._get(f'options/trades', {'limit':limit, 'start_time':start_time, 'end_time':end_time})
+
+    def get_options_fills(self, limit:float=None, start_time:float=None, end_time:float=None)->List[dict]:
+        return self._get(f'options/fills', {'limit':limit, 'start_time':start_time, 'end_time':end_time})
+
+    def get_expired_futures(self)->dict:
+        return self._get(f'expired_futures')
