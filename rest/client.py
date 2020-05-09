@@ -156,6 +156,9 @@ class FtxClient:
 
     def get_positions(self, show_avg_price: bool = False) -> List[dict]:
         return self._get('positions', {'showAvgPrice': show_avg_price})
+    
+    def get_funding_rate(self, future:str) -> List[dict]:
+        return self._get('funding_rates?future=' + future)
 
     def get_position(self, name: str, show_avg_price: bool = False) -> dict:
         return next(filter(lambda x: x['future'] == name, self.get_positions(show_avg_price)), None)
