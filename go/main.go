@@ -12,10 +12,10 @@ import (
 
 var URL = "https://ftx.com/api/"
 
-func (client *FtxClient) prepareRequest(method string, path string, body []byte) *http.Request {
+func (client *FtxClient) signRequest(method string, path string, body []byte) *http.Request {
 	ts := strconv.FormatInt(time.Now().UTC().Unix()*1000, 10)
 	signaturePayload := ts + method + "/api/" + path + string(body)
-	signature := client.signRequest(signaturePayload)
+	signature := client.sign(signaturePayload)
 	req, _ := http.NewRequest(method, URL+path, bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("FTX-KEY", client.Api)
@@ -25,19 +25,19 @@ func (client *FtxClient) prepareRequest(method string, path string, body []byte)
 }
 
 func (client *FtxClient) _get(path string, body []byte) (*http.Response, error) {
-	preparedRequest := client.prepareRequest("GET", path, body)
+	preparedRequest := client.signRequest("GET", path, body)
 	resp, err := client.Client.Do(preparedRequest)
 	return resp, err
 }
 
 func (client *FtxClient) _post(path string, body []byte) (*http.Response, error) {
-	preparedRequest := client.prepareRequest("POST", path, body)
+	preparedRequest := client.signRequest("POST", path, body)
 	resp, err := client.Client.Do(preparedRequest)
 	return resp, err
 }
 
 func (client *FtxClient) _delete(path string, body []byte) (*http.Response, error) {
-	preparedRequest := client.prepareRequest("DELETE", path, body)
+	preparedRequest := client.signRequest("DELETE", path, body)
 	resp, err := client.Client.Do(preparedRequest)
 	return resp, err
 }
@@ -63,7 +63,7 @@ func (client *FtxClient) placeOrder(market string, side string, price float64, _
 }
 
 func main() {
-	client := FtxClient{Client: &http.Client{}, Api: "API", Secret: "SECRET"}
+	client := FtxClient{Client: &http.Client{}, Api: "API KEY", Secret: []byte("SECRET")}
 	resp, _ := client.getMarkets()
 	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
