@@ -1,4 +1,4 @@
-package main
+package ftx
 
 import (
 	"crypto/hmac"

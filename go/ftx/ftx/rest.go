@@ -1,14 +1,16 @@
-package main
+package ftx
 
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 )
 
-var URL = "https://ftx.com/api/"
+const URL = "https://ftx.com/api/"
 
 func (client *FtxClient) signRequest(method string, path string, body []byte) *http.Request {
 	ts := strconv.FormatInt(time.Now().UTC().Unix()*1000, 10)
@@ -19,6 +21,9 @@ func (client *FtxClient) signRequest(method string, path string, body []byte) *h
 	req.Header.Set("FTX-KEY", client.Api)
 	req.Header.Set("FTX-SIGN", signature)
 	req.Header.Set("FTX-TS", ts)
+	if client.Subaccount != "" {
+		req.Header.Set("FTX-SUBACCOUNT", client.Subaccount)
+	}
 	return req
 }
 
@@ -40,22 +45,17 @@ func (client *FtxClient) _delete(path string, body []byte) (*http.Response, erro
 	return resp, err
 }
 
-func (client *FtxClient) getMarkets() (*http.Response, error) {
-	return client._get("markets", []byte(""))
-}
-
-func (client *FtxClient) deleteOrder(orderId int64) (*http.Response, error) {
-	path := "orders/" + strconv.FormatInt(orderId, 10)
-	return client._delete(path, []byte(""))
-}
-
-func (client *FtxClient) deleteAllOrders() (*http.Response, error) {
-	return client._delete("orders", []byte(""))
-}
-
-func (client *FtxClient) placeOrder(market string, side string, price float64, _type string, size float64) (*http.Response, error) {
-	newOrder := Order{Market: market, Side: side, Price: price, Type: _type, Size: size}
-	body, _ := json.Marshal(newOrder)
-	resp, err := client._post("orders", body)
-	return resp, err
+func _processResponse(resp *http.Response, result interface{}) error {
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error processing response:", err)
+		return err
+	}
+	err = json.Unmarshal(body, result)
+	if err != nil {
+		log.Printf("Error processing response:", err)
+		return err
+	}
+	return nil
 }
