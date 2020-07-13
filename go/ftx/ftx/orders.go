@@ -20,7 +20,6 @@ type Triggers structs.Triggers
 func (client *FtxClient) GetOpenOrders(market string) (OpenOrders, error) {
 	var openOrders OpenOrders
 	resp, err := client._get("orders?market="+market, []byte(""))
-	defer resp.Body.Close()
 	if err != nil {
 		log.Printf("Error GetOpenOrders", err)
 		return openOrders, err
