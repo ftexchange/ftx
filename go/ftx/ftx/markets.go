@@ -35,7 +35,6 @@ func (client *FtxClient) GetTrades(market string, limit int64, startTime int64, 
 			"&start_time="+strconv.FormatInt(startTime, 10)+
 			"&end_time="+strconv.FormatInt(endTime, 10),
 		[]byte(""))
-	defer resp.Body.Close()
 	if err != nil {
 		log.Printf("Error GetTrades", err)
 		return trades, err
