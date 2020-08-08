@@ -107,7 +107,7 @@ void HTTPSession::authenticate(http::request<http::string_body>& req)
     }
     std::string hmacced = encoding::hmac(std::string(api_secret), data, 32);
     std::string sign =
-      encoding::string_to_hex((unsigned char*)hmacced.c_str(), 32);
+      encoding::util_string_to_hex((unsigned char*)hmacced.c_str(), 32);
 
     req.set("FTX-KEY", api_key);
     req.set("FTX-TS", ts);

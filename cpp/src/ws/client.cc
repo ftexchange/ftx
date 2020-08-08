@@ -32,7 +32,7 @@ std::vector<json> WSClient::on_open()
         std::string data = std::to_string(ts) + "websocket_login";
         std::string hmacced = encoding::hmac(std::string(api_secret), data, 32);
         std::string sign =
-          encoding::string_to_hex((unsigned char*)hmacced.c_str(), 32);
+          encoding::util_string_to_hex((unsigned char*)hmacced.c_str(), 32);
         json msg = {{"op", "login"},
                     {"args", {{"key", api_key}, {"sign", sign}, {"time", ts}}}};
         if (!subaccount_name.empty()) {
