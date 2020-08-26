@@ -23,15 +23,15 @@ WS::WS()
           on_message_cb(j);
       });
 
-    wsclient.set_close_handler([this](websocketpp::connection_hdl) {
+    wsclient.set_close_handler([](websocketpp::connection_hdl) {
         std::cout << "connection closed";
     });
 
     wsclient.set_interrupt_handler(
-      [this](websocketpp::connection_hdl) { throw "Interrupt handler"; });
+      [](websocketpp::connection_hdl) { throw "Interrupt handler"; });
 
     wsclient.set_fail_handler(
-      [this](websocketpp::connection_hdl) { throw "Fail handler"; });
+      [](websocketpp::connection_hdl) { throw "Fail handler"; });
 
     wsclient.set_tls_init_handler([](websocketpp::connection_hdl) {
         return websocketpp::lib::make_shared<boost::asio::ssl::context>(
