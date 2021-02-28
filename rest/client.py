@@ -62,6 +62,9 @@ class FtxClient:
     def list_markets(self) -> List[dict]:
         return self._get('markets')
 
+    def get_historical_prices(self, market: str = None, resolution: float = None, limit: float = None, start_time: float = None, end_time: float = None) -> dict:
+        return self._get(f'markets/{market}/candles', {'resolution': resolution, 'limit': limit, 'start_time': start_time, 'end_time': end_time})
+
     def get_orderbook(self, market: str, depth: int = None) -> dict:
         return self._get(f'markets/{market}/orderbook', {'depth': depth})
 
