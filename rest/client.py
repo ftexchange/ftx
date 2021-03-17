@@ -58,6 +58,12 @@ class FtxClient:
 
     def list_futures(self) -> List[dict]:
         return self._get('futures')
+    
+    def get_funding_rates(self, start_time=None, end_time=None, future=None) -> List[dict]:
+        return self._get('funding_rates', {'start_time': start_time, 'end_time': end_time, 'future': future})
+
+    def get_funding_payments(self, start_time=None, end_time=None, future=None) -> List[dict]:
+        return self._get('funding_payments', {'start_time': start_time, 'end_time': end_time, 'future': future})
 
     def list_markets(self) -> List[dict]:
         return self._get('markets')
