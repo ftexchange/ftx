@@ -1,5 +1,5 @@
 import smtplib
-import data
+import iuriiz_project.data as data
 
 
 def send_email(message):

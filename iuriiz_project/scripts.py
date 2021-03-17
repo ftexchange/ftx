@@ -1,9 +1,9 @@
 import datetime
-import constants
-import send_mail
+import iuriiz_project.constants as constants
+import iuriiz_project.send_mail as send_mail
 
 from rest.client import FtxClient
-from data import view_api_key, view_api_secret, futures_markets
+from iuriiz_project.data import view_api_key, view_api_secret, futures_markets
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 ONE_HOUR = constants.ONE_HOUR
@@ -17,7 +17,7 @@ def analyze_funding_data():
     funding_rates = []
     for data in raw_funding_rates:
         if data['future'] in futures_markets:
-            if data['rate'] <= 0:
+          # if data['rate'] <= 0:
                 market = data['future']
                 fr = float(data['rate']) * 100
                 funding_rates.append([market, fr])
@@ -35,6 +35,6 @@ def send_daily_statement():
 
 def start_scheduler():
     scheduler = BlockingScheduler()
-    scheduler.add_job(check_hourly_futures_rate, 'interval', hours=1)
+    scheduler.add_job(check_hourly_futures_rate, 'interval', seconds=10)
     scheduler.add_job(send_daily_statement, 'interval', days=1)
     scheduler.start()
