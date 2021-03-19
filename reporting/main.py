@@ -138,7 +138,7 @@ Funding payments:
         funding_rates = []
         for data in raw_funding_rates:
             if data['future'] in futures_markets:
-               # if data['rate'] <= 0:
+               if data['rate'] <= 0:
                     market = data['future']
                     fr = float(data['rate']) * 100
                     funding_rates.append([market, fr])
