@@ -16,5 +16,5 @@ ________________________________________________________________________________
 
 _Possible error with the gmail account_
 
-There is a typical error with the gmail account you may encounter at the start of the process if you use an unusual IP address. To solve it proceed to the link below and press continue before starting the process
+There is a typical error with the gmail account you may encounter at the start of the process if you use an unusual IP address (''Please log in via your web browser and then try again''). To solve it proceed to the link below and press continue before starting the process
 https://accounts.google.com/b/0/DisplayUnlockCaptcha
