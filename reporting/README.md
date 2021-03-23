@@ -1,4 +1,4 @@
-**FTX Reporting for farming futures funding.**
+# FTX Reporting for farming futures funding.
 
 Reporting module sends two types of messages:
 1. Daily reports of the farming result including previous day resul and current position on spot and futures market.
