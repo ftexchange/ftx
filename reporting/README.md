@@ -11,3 +11,10 @@ Before starting you have to fill the data.py file with
 * markets you want to analyze
 
 After filling the data.py file start the process by executing start_reporting.py 
+
+________________________________________________________________________________
+
+_Possible error with the gmail account_
+
+There is a typical error with the gmail account you may encounter at the start of the process if you use an unusual IP address. To solve it proceed to the link below and press continue before starting the process
+https://accounts.google.com/b/0/DisplayUnlockCaptcha
