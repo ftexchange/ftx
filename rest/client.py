@@ -56,14 +56,17 @@ class FtxClient:
                 raise Exception(data['error'])
             return data['result']
 
-    def list_futures(self) -> List[dict]:
+    def get_all_futures(self) -> List[dict]:
         return self._get('futures')
+
+    def get_future(self, future_name: str = None) -> dict:
+        return self._get(f'futures/{future_name}')
 
     def list_markets(self) -> List[dict]:
         return self._get('markets')
 
-    def get_orderbook(self, market: str, depth: int = None) -> dict:
-        return self._get(f'markets/{market}/orderbook', {'depth': depth})
+    def get_orderbook(self, market: str, depth: int = None, start_time: float = None, end_time: float = None) -> dict:
+        return self._get(f'markets/{market}/orderbook', {'depth': depth, 'start_time': start_time, 'end_time': end_time})
 
     def get_trades(self, market: str) -> dict:
         return self._get(f'markets/{market}/trades')
@@ -73,10 +76,10 @@ class FtxClient:
 
     def get_open_orders(self, market: str = None) -> List[dict]:
         return self._get(f'orders', {'market': market})
-    
+
     def get_order_history(self, market: str = None, side: str = None, order_type: str = None, start_time: float = None, end_time: float = None) -> List[dict]:
         return self._get(f'orders/history', {'market': market, 'side': side, 'orderType': order_type, 'start_time': start_time, 'end_time': end_time})
-        
+
     def get_conditional_order_history(self, market: str = None, side: str = None, type: str = None, order_type: str = None, start_time: float = None, end_time: float = None) -> List[dict]:
         return self._get(f'conditional_orders/history', {'market': market, 'side': side, 'type': type, 'orderType': order_type, 'start_time': start_time, 'end_time': end_time})
 
@@ -132,7 +135,7 @@ class FtxClient:
 
         return self._post('conditional_orders',
                           {'market': market, 'side': side, 'triggerPrice': trigger_price,
-                           'size': size, 'reduceOnly': reduce_only, 'type': 'stop',
+                           'size': size, 'reduceOnly': reduce_only, 'type': type,
                            'cancelLimitOnTrigger': cancel, 'orderPrice': limit_price})
 
     def cancel_order(self, order_id: str) -> dict:
@@ -145,14 +148,17 @@ class FtxClient:
                                         'limitOrdersOnly': limit_orders,
                                         })
 
+    def cancel_order_by_client_id(self, client_id: str) -> dict:
+        return self._delete(f'orders/by_client_id/{client_id}')
+
     def get_fills(self) -> List[dict]:
         return self._get(f'fills')
 
     def get_balances(self) -> List[dict]:
         return self._get('wallet/balances')
 
-    def get_deposit_address(self, ticker: str) -> dict:
-        return self._get(f'wallet/deposit_address/{ticker}')
+    def get_deposit_address(self, ticker: str, method: str = None) -> dict:
+        return self._get(f'wallet/deposit_address/{ticker}', {'method': method})
 
     def get_positions(self, show_avg_price: bool = False) -> List[dict]:
         return self._get('positions', {'showAvgPrice': show_avg_price})
@@ -179,3 +185,50 @@ class FtxClient:
             if len(response) < limit:
                 break
         return results
+
+    def get_historical_prices(
+        self, market: str, resolution: int = 300, start_time: float = None,
+        end_time: float = None, limit: int = 1000
+    ) -> List[dict]:
+        return self._get(f'markets/{market}/candles', {
+            'resolution': resolution,
+            'start_time': start_time,
+            'end_time': end_time,
+            'limit': limit
+        })
+
+    def get_borrow_history(self, start_time: float = None, end_time: float = None) -> List[dict]:
+        return self._get('spot_margin/borrow_history', {'start_time': start_time, 'end_time': end_time})
+
+    def get_lending_history(self, start_time: float = None, end_time: float = None) -> List[dict]:
+        return self._get('spot_margin/lending_history', {'start_time': start_time, 'end_time': end_time})
+
+    def get_expired_futures(self) -> List[dict]:
+        return self._get('expired_futures')
+
+    def get_coins(self) -> List[dict]:
+        return self._get('wallet/coins')
+
+    def get_future_stats(self, future_name: str) -> dict:
+        return self._get(f'futures/{future_name}/stats')
+
+    def get_market_info(self, market: str = 'BTC/USDT') -> dict:
+        return self._get(f'spot_margin/market_info', {'market': market})
+
+    def get_saved_addresses(self, coin: str = None) -> dict:
+        return self._get(f'wallet/saved_addresses', {'coin': coin})
+
+    def get_trigger_order_triggers(self, conditional_order_id: str = None) -> List[dict]:
+        return self._get(f'conditional_orders/{conditional_order_id}/triggers')
+
+    def get_trigger_order_history(self, market: str = 'BTC/USDT') -> List[dict]:
+        return self._get(f'conditional_orders/history', {'market': market})
+
+    def get_staking_balances(self) -> List[dict]:
+        return self._get('staking/balances')
+
+    def get_stakes(self) -> List[dict]:
+        return self._get('staking/stakes')
+
+    def get_referral_rebate_history(self) -> List[dict]:
+        return self._get('referral_rebate_history')
